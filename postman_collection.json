@@ -1,0 +1,182 @@
+{
+  "info": {
+    "name": "StackSeekho - Production Patterns API",
+    "description": "API collection for testing health probes, orders, and idempotent webhook processing.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "pendingOrderId",
+      "value": "b0000000-0000-0000-0000-000000000001",
+      "type": "string"
+    },
+    {
+      "key": "cancelledOrderId",
+      "value": "b0000000-0000-0000-0000-000000000003",
+      "type": "string"
+    },
+    {
+      "key": "paidOrderId",
+      "value": "b0000000-0000-0000-0000-000000000004",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Probes",
+      "item": [
+        {
+          "name": "GET /health - Full System Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            }
+          }
+        },
+        {
+          "name": "GET /health/live - Liveness Probe",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health", "live"]
+            }
+          }
+        },
+        {
+          "name": "GET /health/ready - Database Readiness Probe",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health", "ready"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Webhook - Idempotent Processing",
+      "item": [
+        {
+          "name": "POST /webhook - First Delivery (Success: processed)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"eventId\": \"evt_live_test_001\",\n  \"eventType\": \"payment.succeeded\",\n  \"orderId\": \"{{pendingOrderId}}\",\n  \"amount\": 4999,\n  \"currency\": \"USD\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/webhook",
+              "host": ["{{baseUrl}}"],
+              "path": ["webhook"]
+            }
+          }
+        },
+        {
+          "name": "POST /webhook - Duplicate Delivery (Idempotent: duplicate_ignored)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"eventId\": \"evt_live_test_001\",\n  \"eventType\": \"payment.succeeded\",\n  \"orderId\": \"{{pendingOrderId}}\",\n  \"amount\": 4999,\n  \"currency\": \"USD\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/webhook",
+              "host": ["{{baseUrl}}"],
+              "path": ["webhook"]
+            }
+          }
+        },
+        {
+          "name": "POST /webhook - Nonexistent Order (Rollback & 404)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"eventId\": \"evt_nonexistent_test\",\n  \"eventType\": \"payment.succeeded\",\n  \"orderId\": \"ffffffff-ffff-ffff-ffff-ffffffffffff\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/webhook",
+              "host": ["{{baseUrl}}"],
+              "path": ["webhook"]
+            }
+          }
+        },
+        {
+          "name": "POST /webhook - Invalid State Transition (Cancelled Order: 409)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"eventId\": \"evt_cancelled_order_test\",\n  \"eventType\": \"payment.succeeded\",\n  \"orderId\": \"{{cancelledOrderId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/webhook",
+              "host": ["{{baseUrl}}"],
+              "path": ["webhook"]
+            }
+          }
+        },
+        {
+          "name": "POST /webhook - Validation Error (Invalid UUID: 400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"eventId\": \"evt_bad_payload\",\n  \"eventType\": \"payment.succeeded\",\n  \"orderId\": \"not-a-valid-uuid\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/webhook",
+              "host": ["{{baseUrl}}"],
+              "path": ["webhook"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
