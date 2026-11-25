@@ -35,15 +35,15 @@ Additional tools and dependencies will be documented as each feature is implemen
 
 | Feature | Status |
 |---|---|
-| Project setup and configuration | Planned |
-| PostgreSQL connection and migrations | Planned |
+| Project setup and configuration | Done |
+| PostgreSQL connection and migrations | Done |
 | Authentication and authorization | Planned |
-| Database transactions | Planned |
-| Idempotent webhook processing | Planned |
+| Database transactions | Done |
+| Idempotent webhook processing | Done |
 | Queue worker and retry handling | Planned |
-| Structured logging | Planned |
-| Docker setup | Planned |
-| Automated tests | Planned |
+| Structured logging | Done |
+| Docker setup | Done |
+| Automated tests | Done |
 | CI/CD pipeline | Planned |
 
 > Roadmap statuses will be updated as features are implemented and tested.
