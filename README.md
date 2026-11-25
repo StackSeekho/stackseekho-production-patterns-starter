@@ -37,14 +37,14 @@ Additional tools and dependencies will be documented as each feature is implemen
 |---|---|
 | Project setup and configuration | Done |
 | PostgreSQL connection and migrations | Done |
-| Authentication and authorization | Planned |
+| Authentication and authorization | Done |
 | Database transactions | Done |
 | Idempotent webhook processing | Done |
-| Queue worker and retry handling | Planned |
+| Queue worker and retry handling | Done |
 | Structured logging | Done |
 | Docker setup | Done |
 | Automated tests | Done |
-| CI/CD pipeline | Planned |
+| CI/CD pipeline | Done |
 
 > Roadmap statuses will be updated as features are implemented and tested.
 
